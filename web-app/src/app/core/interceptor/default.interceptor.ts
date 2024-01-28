@@ -173,6 +173,13 @@ export class DefaultInterceptor implements HttpInterceptor {
       const { baseUrl } = environment.api;
       url = baseUrl + (baseUrl.endsWith('/') && url.startsWith('/') ? url.substring(1) : url);
     }
+    var item = localStorage.getItem('net');
+    if(item==='prod'){
+      localStorage.setItem('net','prod')
+      url = url.replace(':1157/',':1155/')
+    }else{
+      url = url.replace(':1155/',':1157/')
+    }
     const newReq = req.clone({ url, setHeaders: this.fillHeaders(req.headers) });
     return next.handle(newReq).pipe(
       mergeMap(httpEvent => {

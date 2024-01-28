@@ -15,6 +15,7 @@ import org.dromara.hertzbeat.manager.dao.ParamDao;
 import org.dromara.hertzbeat.manager.service.AppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -33,6 +34,8 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @Order(value = Ordered.LOWEST_PRECEDENCE - 1)
+@ConditionalOnProperty(prefix = "udp",
+        name = "enabled", havingValue = "false")
 @Slf4j
 public class SchedulerInit implements CommandLineRunner {
     

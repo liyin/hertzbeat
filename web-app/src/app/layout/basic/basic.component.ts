@@ -49,6 +49,9 @@ import { CONSTANTS } from '../../shared/constants';
             <div nz-menu-item>
               <header-clear-storage></header-clear-storage>
             </div>
+            <div nz-menu-item>
+              <header-switchnet></header-switchnet>
+            </div>
             <div nz-menu-item routerLink="/setting/tags">
               <i nz-icon nzType="tag" class="mr-sm"></i>
               <span style="margin-left: 4px">{{ 'menu.extras.tags' | i18n }}</span>

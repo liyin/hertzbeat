@@ -21,6 +21,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 import { LayoutBasicComponent } from './basic/basic.component';
 import { HeaderClearStorageComponent } from './basic/widgets/clear-storage.component';
+import { SwitchnetComponent } from './basic/widgets/switchnet.component';
 import { HeaderFullScreenComponent } from './basic/widgets/fullscreen.component';
 import { HeaderI18nComponent } from './basic/widgets/i18n.component';
 import { HeaderSearchComponent } from './basic/widgets/search.component';
@@ -33,6 +34,7 @@ const COMPONENTS = [LayoutBasicComponent, LayoutBlankComponent];
 const HEADER_COMPONENTS = [
   HeaderSearchComponent,
   HeaderFullScreenComponent,
+  SwitchnetComponent,
   HeaderI18nComponent,
   HeaderClearStorageComponent,
   HeaderUserComponent,
