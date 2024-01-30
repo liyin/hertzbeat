@@ -47,6 +47,8 @@ public class BootNettyUdpSimpleChannelInboundHandler
 
 	private static final int STRING_MAX_LENGTH = 1024;
 	private static final String TABLE = "table";
+	private static final int CACHE_TIME = 5000;
+	private static final int PROCESS_TIME = 1000;
 
 	private Map<Long, Long> lastAlert;  //key: alertid value: time
 
@@ -65,7 +67,7 @@ public class BootNettyUdpSimpleChannelInboundHandler
 					lastAlert.keySet().removeIf(key -> {
 						Long keyTime = lastAlert.get(key);
 
-						if (currentTime >= keyTime.longValue() + 2000) {
+						if (currentTime >= keyTime.longValue() + CACHE_TIME) {
 							lastAlert.remove(key);
 							return true;
 						}
@@ -75,7 +77,7 @@ public class BootNettyUdpSimpleChannelInboundHandler
 					log.error("periodical deletion failed. {}", e.getMessage());
 				}
 			}
-		}, 1000, 5000);
+		}, 1000, CACHE_TIME);
 	}
 
 	@Override
@@ -84,11 +86,8 @@ public class BootNettyUdpSimpleChannelInboundHandler
 		try {
 			String strdata = msg.content().toString(CharsetUtil.UTF_8);
 			//打印收到的消息
-			log.info("---------------------receive data--------------------------");
-			log.info("报文：{}", msg.toString());
-			log.info(strdata);
-			//解析出来存入
-
+			log.info("UDP收到报文：{}", strdata);
+			//解析 存入
 			Map<String, Object> payload = toMap(strdata);
 			Map source = (Map) payload.get("source");
 			if (Objects.nonNull(source.get(TABLE))) {
@@ -107,7 +106,6 @@ public class BootNettyUdpSimpleChannelInboundHandler
 						break;
 				}
 			}
-			log.info("---------------------receive data--------------------------");
 			//收到udp消息后，可通过此方式原路返回的方式返回消息，例如返回时间戳
 			ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer("ok", CharsetUtil.UTF_8), msg.sender()));
 		} catch (Exception e) {
@@ -190,7 +188,6 @@ public class BootNettyUdpSimpleChannelInboundHandler
 				case "u":
 					return monitorDao.save(JSON.parseObject(JSON.toJSONString(payload.get("after")), Monitor.class))!=null;
 				case "d":
-					//同步删除的数据对于性能而言无意义
 					monitorDao.delete(JSON.parseObject(JSON.toJSONString(payload.get("before")), Monitor.class));
 					return true;
 				default:
@@ -207,7 +204,7 @@ public class BootNettyUdpSimpleChannelInboundHandler
 		Alert alert = JSON.parseObject(JSON.toJSONString(after), Alert.class);
 		Map tagsMap = JSON.parseObject(tags,Map.class);
 		alert.setTags(tagsMap);
-		if (!lastAlert.containsKey(alert.getId()) ||  System.currentTimeMillis() > lastAlert.get(alert.getId()) + 1000L) {
+		if (!lastAlert.containsKey(alert.getId()) ||  System.currentTimeMillis() > lastAlert.get(alert.getId()) + PROCESS_TIME) {
 			lastAlert.put(alert.getId(), System.currentTimeMillis());
 			return alert;
 		}
